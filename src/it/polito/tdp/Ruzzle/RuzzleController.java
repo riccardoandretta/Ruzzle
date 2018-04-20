@@ -6,6 +6,7 @@ package it.polito.tdp.Ruzzle;
 
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
@@ -15,13 +16,14 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 
 public class RuzzleController {
 	
 	private Model model ; 
 	
-	private Map<Pos,Button> letters ;
+	private Map<Pos,Button> letters ; //metto in corrispondenza le posizioni con i bottoni
 	
 
     @FXML // ResourceBundle that was given to the FXMLLoader
@@ -89,16 +91,53 @@ public class RuzzleController {
 
     @FXML // fx:id="txtStatus"
     private Label txtStatus; // Value injected by FXMLLoader
+   
+    @FXML
+    private TextArea txtResult;
 
     @FXML
     void handleProva(ActionEvent event) {
-
+    	
+    	String parola = txtParola.getText();
+    	if (parola.length() == 0) {
+    		txtStatus.setText("ERRORE: Parola vuota");
+    		return;
+    	}
+    	parola = parola.toUpperCase();
+    	
+    	// controllo che ci siano solo caratteri A-Z
+    	if (!parola.matches("[A-Z]+")) {
+    		txtStatus.setText("ERRORE: Caratteri non ammessi");
+    		return;
+    	}
+    	
+    	List<Pos> percorso = model.trovaParola(parola);
+    	if(percorso != null) {
+	    	for (Button b : letters.values()) {
+	    		b.setDefaultButton(false); //resetto
+	    	}
+	    	for (Pos p : percorso) {
+	    		letters.get(p).setDefaultButton(true); //evidenzio i bottoni
+	    	}
+    	}else {
+    		txtStatus.setText("Parola non trovata");
+    	}
+    }
+    
+    @FXML
+    void handleRisolvi(ActionEvent event) {
+    	
+    	List<String> tutte = model.trovaTutte();
+    	txtResult.clear();
+    	txtResult.appendText(String.format("Trovate %d soluzioni\n", tutte.size()));
+    	for(String s : tutte) {
+    		txtResult.appendText(s+"\n");
+    	}
     }
     
     @FXML
     void handleReset(ActionEvent event) {
     	model.reset();
-
     }
 
 
