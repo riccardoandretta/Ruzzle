@@ -8,12 +8,18 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 public class Model {
-	private final int SIZE = 4;
+	private int SIZE = 4;
 	private Board board;
 	private List<String> dizionario;
 	private StringProperty statusText;
 
 	public Model() {
+		this(4); // Richiama il costruttore della stessa classe
+	}
+	
+	public Model(int size) {
+		this.SIZE = size;
+		
 		this.statusText = new SimpleStringProperty();
 
 		this.board = new Board(SIZE);
